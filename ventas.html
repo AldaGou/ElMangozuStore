@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mangozu Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --card: #141414;
+    --card-hover: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --text-muted: #888;
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --accent: #7c3aed;
+    --gold: #fbbf24;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── RAINBOW ANIMATION ─── */
+  @keyframes rainbow-flow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes float-card {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-4px); }
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+    50%       { box-shadow: 0 0 40px rgba(124,58,237,0.6); }
+  }
+
+  /* ─── PAGE CONTAINER ─── */
+  /* This is the "max-width con centrado" — limita el ancho en pantallas grandes */
+  .page-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    height: 64px;
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    position: relative;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #fff 40%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+  }
+
+  .logo span {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  /* ─── HAMBURGER ─── */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 8px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .hamburger:hover { background: #222; }
+  .hamburger span {
+    display: block;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.25s;
+    transform-origin: center;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Mobile dropdown nav */
+  .mobile-nav {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0; right: 0;
+    background: rgba(12,12,12,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+    z-index: 99;
+  }
+  .mobile-nav.open { display: flex; }
+
+  @media (max-width: 640px) {
+    nav { display: none; }
+    .hamburger { display: flex; }
+  }
+
+  .filter-btn {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .filter-btn:hover {
+    border-color: #555;
+    color: var(--text);
+    background: #222;
+  }
+
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(124,58,237,0.4);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 60px 24px 48px;
+    overflow: hidden;
+  }
+
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, #7c3aed, #a855f7, #ec4899, #7c3aed);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* ─── SECTION TITLE ─── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 24px;
+    margin: 0 auto 20px;
+    max-width: 1200px;
+  }
+
+  .section-label span {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── GRID ─── */
+  .grid-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 16px;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .products-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 620px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid-wrapper { padding: 0 14px 14px; }
+  }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    cursor: default;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    border-color: #3a3a3a;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  }
+
+  .card-img-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+  }
+
+  .card:hover .card-img-wrap img {
+    transform: scale(1.06);
+  }
+
+  /* ─── TAG / BADGE ─── */
+  .tag {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 900;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    padding: 4px 9px;
+    border-radius: 7px;
+    text-transform: uppercase;
+    pointer-events: none;
+    background: rgba(0,0,0,0.55);
+    border: none;
+    color: #fff;
+    text-shadow:
+      -2px -2px 0 #000,
+       2px -2px 0 #000,
+      -2px  2px 0 #000,
+       2px  2px 0 #000,
+      -3px  0   0 #000,
+       3px  0   0 #000,
+       0   -3px 0 #000,
+       0    3px 0 #000;
+  }
+
+  /* INFINITO — fondo casi opaco para que el rainbow resalte bien */
+  .tag.infinito {
+    font-size: 0.76rem;
+    background: transparent;
+    border: none;
+    text-shadow: none;
+    position: absolute;
+  }
+  .tag.infinito::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    border-radius: 7px;
+    z-index: 0;
+  }
+  .tag.infinito .tag-text {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(90deg, #ff0000,#ff7700,#ffff00,#00ff00,#00ffff,#0000ff,#8b00ff,#ff0000);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 2.5s linear infinite;
+  }
+
+  /* DIVINO — texto dorado con stroke negro, recuadro igual */
+  .tag.divino .tag-text {
+    color: var(--gold);
+    -webkit-text-fill-color: var(--gold);
+    text-shadow:
+      -2px -2px 0 #000,
+       2px -2px 0 #000,
+      -2px  2px 0 #000,
+       2px  2px 0 #000,
+      -3px  0   0 #000,
+       3px  0   0 #000,
+       0   -3px 0 #000,
+       0    3px 0 #000;
+  }
+
+  /* ─── CARD BODY ─── */
+  .card-body {
+    padding: 12px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .card-price {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--green);
+    letter-spacing: -0.01em;
+  }
+
+  .buy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  .buy-btn:hover {
+    background: #16a34a;
+    transform: scale(1.04);
+  }
+
+  .buy-btn:active {
+    transform: scale(0.97);
+  }
+
+  .buy-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* quitar subrayado del enlace del botón comprar */
+  .card-bottom a { text-decoration: none; }
+
+  /* ─── EMPTY STATE ─── */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  /* ─── PAYMENTS ─── */
+  .payments {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding: 44px 24px 60px;
+    text-align: center;
+  }
+
+  .payments-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .payments h2 {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .payment-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .pay-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 22px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .pay-pill:hover {
+    border-color: #444;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .pay-pill .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* YAPE */
+  .yape { color: #c261f5; }
+  .yape .icon {
+    background: linear-gradient(135deg, #5b04b0, #9f09c8);
+    color: #fff;
+  }
+  .yape-letter {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: #fff;
+  }
+
+  /* BINANCE */
+  .binance { color: #f0b90b; }
+  .binance .icon {
+    background: #0b0e11;
+    color: #f0b90b;
+    font-size: 1.2rem;
+  }
+
+  /* PAYPAL */
+  .paypal { color: #009cde; }
+  .paypal .icon {
+    background: linear-gradient(135deg, #003087, #009cde);
+    color: #fff;
+    font-size: 1.2rem;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: #333;
+    font-size: 0.75rem;
+    border-top: 1px solid #181818;
+  }
+
+  /* ─── FADE-IN ─── */
+  .card {
+    animation: fade-up 0.4s ease both;
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">Mangozu <span>Store</span></div>
+    <nav id="nav">
+      <button class="filter-btn active" data-cat="todos">Todos</button>
+      <button class="filter-btn" data-cat="infinito">Infinitos</button>
+      <button class="filter-btn" data-cat="divino">Divinos</button>
+      <button class="filter-btn" data-cat="exclusivo">Exclusivos</button>
+      <button class="filter-btn" data-cat="escudo">Escudos</button>
+      <button class="filter-btn" data-cat="baseskin">Base Skin</button>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <!-- Mobile dropdown -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="filter-btn active" data-cat="todos">Todos</button>
+    <button class="filter-btn" data-cat="infinito">Infinitos</button>
+    <button class="filter-btn" data-cat="divino">Divinos</button>
+    <button class="filter-btn" data-cat="exclusivo">Exclusivos</button>
+    <button class="filter-btn" data-cat="escudo">Escudos</button>
+    <button class="filter-btn" data-cat="baseskin">Base Skin</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>El mejor store de<br><em>ítems premium</em></h1>
+    <p>Consigue los ítems más exclusivos. Pagos seguros y entrega inmediata.</p>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<div class="section-label"><span>Catálogo</span></div>
+<div class="grid-wrapper">
+  <div class="products-grid" id="grid"></div>
+</div>
+
+<!-- PAYMENTS -->
+<section class="payments">
+  <div class="payments-inner">
+    <h2>Métodos de pago aceptados</h2>
+    <div class="payment-logos">
+      <!-- YAPE: recreación del logo en SVG -->
+      <div class="pay-pill yape">
+        <div class="icon" style="background:none; padding:0; width:36px; height:36px;">
+          <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="9" fill="url(#yapeGrad)"/>
+            <defs>
+              <linearGradient id="yapeGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#7B2FBE"/>
+                <stop offset="100%" stop-color="#4A0D8F"/>
+              </linearGradient>
+            </defs>
+            <!-- Y shape: dos diagonales arriba + línea vertical abajo -->
+            <path d="M10 9 L18 20 L26 9" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="18" y1="20" x2="18" y2="28" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>YAPE</span>
+      </div>
+      <!-- BINANCE: logo SVG oficial -->
+      <div class="pay-pill binance">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 126.6 126.6" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#F0B90B" d="M38.7 53.2L63.3 28.6l24.7 24.7 14.4-14.4L63.3 0 24.3 38.8z"/>
+            <path fill="#F0B90B" d="M0 63.3l14.4-14.4 14.4 14.4-14.4 14.4z"/>
+            <path fill="#F0B90B" d="M38.7 73.4l24.6 24.6 24.7-24.7 14.4 14.3-39.1 39.1L24.3 88z"/>
+            <path fill="#F0B90B" d="M97.8 63.3l14.4-14.4 14.4 14.4-14.4 14.4z"/>
+            <path fill="#F0B90B" d="M77.9 63.3l-14.6-14.7-10.8 10.8-1.2 1.2-2.6 2.6 14.6 14.6 14.6-14.5z"/>
+          </svg>
+        </div>
+        <span>BINANCE PAY</span>
+      </div>
+      <!-- PAYPAL: fa-brands fa-paypal -->
+      <div class="pay-pill paypal">
+        <div class="icon">
+          <i class="fa-brands fa-paypal"></i>
+        </div>
+        <span>PAYPAL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2025 Mangozu Store — Todos los derechos reservados</footer>
+
+<script>
+// ─── PRODUCT DATA ───
+const products = [
+  // INFINITOS
+  {
+    name: "Anububu Diamond",
+    cat: "infinito",
+    price: 35,
+    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80"
+  },
+  {
+    name: "Metatech Prime",
+    cat: "infinito",
+    price: 42,
+    img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80"
+  },
+  {
+    name: "Magmew Core",
+    cat: "infinito",
+    price: 38,
+    img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80"
+  },
+  {
+    name: "Infinity Void",
+    cat: "infinito",
+    price: 50,
+    img: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&q=80"
+  },
+  // DIVINOS
+  {
+    name: "God Mew Divine",
+    cat: "divino",
+    price: 60,
+    img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80"
+  },
+  {
+    name: "Angel Aura",
+    cat: "divino",
+    price: 55,
+    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80"
+  },
+  {
+    name: "Heavenly Wings",
+    cat: "divino",
+    price: 65,
+    img: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=400&q=80"
+  },
+  {
+    name: "Eternal Light",
+    cat: "divino",
+    price: 58,
+    img: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=400&q=80"
+  },
+  // EXCLUSIVOS
+  {
+    name: "Limited Blade",
+    cat: "exclusivo",
+    price: 80,
+    img: "https://images.unsplash.com/photo-1614854262318-831574f15f1f?w=400&q=80"
+  },
+  {
+    name: "Alpha Crown",
+    cat: "exclusivo",
+    price: 95,
+    img: "https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=400&q=80"
+  },
+  // ESCUDOS
+  {
+    name: "Baluarte Neo",
+    cat: "escudo",
+    price: 28,
+    img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&q=80"
+  },
+  {
+    name: "Reflector Z",
+    cat: "escudo",
+    price: 24,
+    img: "https://images.unsplash.com/photo-1624913503273-5f9c4e980dba?w=400&q=80"
+  }
+];
+
+// TAG labels
+const tagLabel = { infinito: "Infinito", divino: "Divino", exclusivo: "Exclusivo", escudo: "Escudo", baseskin: "Base Skin" };
+
+function tagClass(cat) {
+  if (cat === "infinito") return "tag infinito";
+  if (cat === "divino") return "tag divino";
+  return "tag";
+}
+
+function buildCard(p) {
+  const waMsg = encodeURIComponent(`¡Hola Mangozu Store! Me interesa el ítem: ${p.name}`);
+  const waUrl = `https://wa.me/?text=${waMsg}`;
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.cat = p.cat;
+
+  card.innerHTML = `
+    <div class="card-img-wrap">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      <div class="${tagClass(p.cat)}"><span class="tag-text" data-text="${tagLabel[p.cat] || p.cat}">${tagLabel[p.cat] || p.cat}</span></div>
+    </div>
+    <div class="card-body">
+      <div class="card-name">${p.name}</div>
+      <div class="card-bottom">
+        <div class="card-price">S/. ${p.price}.00</div>
+        <a href="${waUrl}" target="_blank" rel="noopener">
+          <button class="buy-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 001.97 1.61h9.72a2 2 0 001.97-1.61L23 6H6"/>
+            </svg>
+            Comprar
+          </button>
+        </a>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+// ─── RENDER ───
+const grid = document.getElementById("grid");
+
+function render(cat) {
+  grid.innerHTML = "";
+  const filtered = cat === "todos" ? products : products.filter(p => p.cat === cat);
+
+  if (filtered.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No hay productos en esta categoría aún.";
+    grid.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach((p, i) => {
+    const card = buildCard(p);
+    card.style.animationDelay = `${i * 0.045}s`;
+    grid.appendChild(card);
+  });
+}
+
+// ─── FILTER BUTTONS (both desktop nav + mobile nav) ───
+function setActiveFilter(cat) {
+  document.querySelectorAll(".filter-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.cat === cat);
+  });
+  render(cat);
+  // close mobile nav after picking
+  document.getElementById("mobileNav").classList.remove("open");
+  document.getElementById("hamburger").classList.remove("open");
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => setActiveFilter(btn.dataset.cat));
+});
+
+// ─── HAMBURGER ───
+const hamburger = document.getElementById("hamburger");
+const mobileNav = document.getElementById("mobileNav");
+hamburger.addEventListener("click", () => {
+  hamburger.classList.toggle("open");
+  mobileNav.classList.toggle("open");
+});
+
+// Initial render
+render("todos");
+</script>
+</body>
+</html>
